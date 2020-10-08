@@ -1,21 +1,24 @@
 package com.baoly.bean;
 
-/**
- * @author baoly
- * @version 1.0
- * @date 2020/10/5 21:49
- * @description
- */
 public class User {
-    private int id;
-    private String username;
-    private int age;
+    private Integer id;
 
-    public int getId() {
+    private String username;
+
+    private String gender;
+
+    private Integer age;
+
+    private String email;
+
+    private int deptId;
+    private String deptName;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -27,11 +30,43 @@ public class User {
         this.username = username;
     }
 
-    public int getAge() {
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(int deptId) {
+        this.deptId = deptId;
+    }
+
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
     }
 }
