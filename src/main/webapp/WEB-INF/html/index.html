@@ -1,25 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>首页</title>
-    <button id="getData">获取数据</button>
-    <link rel="stylesheet" href="../../static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.css" rel="stylesheet">
 </head>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <h3>SSM-CRUD</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-8" style="margin-bottom: 8px;">
+            <button type="button" class="btn btn-success btn-sm">
+                <span class="glyphicon glyphicon-plus"></span>
+                新增
+            </button>
+            <button type="button" class="btn btn-primary btn-sm">
+                <span class="glyphicon glyphicon-pencil"></span>
+                编辑
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-striped" id="userTable"
+                   data-show-refresh="true"
+                   data-show-toggle="true"
+                   data-showColumns="true"
+            >
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            当前第<span id="currentPage"></span>页,总<span id="pages"></span>页,总<span id="total"></span>条记录
+        </div>
+        <div class="col-md-6">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li><a href="#">首页</a></li>
+                    <li class="prev">
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-label="Next" onclick="toNextPage()">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li><a href="#">末页</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
 <body>
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.js"></script>
-<script src="../../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.8.0/bootstrap-table-all.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.8.0/locale/bootstrap-table-zh-CN.min.js"></script>
 <script>
-    $('#getData').click(function () {
-        console.log('run')
+    $(function () {
+        getUserData(1, 5);
+    })
+
+    function getUserData(currentPage, pageSize) {
+        $('#userTable').bootstrapTable('destroy');
+        $('#userTable').bootstrapTable('hideLoading');
+        //初始化表格,动态从服务器加载数据
+        $("#userTable").bootstrapTable({
+            method: "get",  //使用get请求到服务器获取数据
+            url: "/userList", //获取数据的Servlet地址
+            striped: true,  //表格显示条纹
+            pagination: false, //启动分页
+            pageSize: pageSize,  //每页显示的记录数
+            pageNumber: currentPage, //当前第几页
+            pageList: [5, 10, 15, 20, 25],  //记录数可选列表
+            search: false,  //是否启用查询
+            showColumns: true,  //显示下拉框勾选要显示的列
+            showLoading: false,
+            showRefresh: true,  //显示刷新按钮
+            sidePagination: "server", //表示服务端请求
+            //设置为undefined可以获取pageNumber，pageSize，searchText，sortName，sortOrder
+            //设置为limit可以获取limit, offset, search, sort, order
+            queryParamsType: "undefined",
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    pageNumber: params.pageNumber,
+                    pageSize: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {
+                    title: '姓名',
+                    field: 'username'
+                },
+                {
+                    title: '性别',
+                    field: 'gender'
+                },
+                {
+                    title: '邮箱',
+                    field: 'email'
+                },
+                {
+                    title: '部门',
+                    field: 'deptName'
+                },
+                {
+                    title: '操作',
+                    filed: 'option',
+                    formatter: function option(value, row, index) {
+                        var html = "";
+                        html += ' <button class="btn btn-primary" style="margin-right: 5px;">编辑</button><button class="btn btn-danger">删除</button>'
+                        return html;
+                    }
+                }
+            ],
+            onLoadSuccess: function (result) {  //加载成功时执行
+                console.log(result.pageInfo)
+                var currentPage = result.pageInfo.pageNum;
+                var pages = result.pageInfo.pages;
+                var total = result.pageInfo.total;
+                var pageSize = result.pageInfo.pageSize;
+                $('#currentPage').text(currentPage);
+                $('#pages').text(pages);
+                $('#total').text(total);
+                var paginationHtml = '';
+                if ($("li.page").length != 0) {
+                    $("li.page").remove();
+                }
+                for (var i = 0; i < result.pageInfo.navigatepageNums.length; i++) {
+                    if (result.pageInfo.pageNum == result.pageInfo.navigatepageNums[i]) {
+                        paginationHtml += ' <li class="active page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
+                    }
+                    else {
+                        paginationHtml += '<li class="page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
+                    }
+                }
+                $('.prev').after(paginationHtml)
+                var data = {total: result.pageInfo.total, rows: result.pageInfo.list};
+                $("#userTable").bootstrapTable('load', data)
+            },
+            onLoadError: function () {  //加载失败时执行
+                console.log('error')
+            }
+        })
+    }
+
+    function changePage(currentPage) {
         $.ajax({
             method: 'get',
-            url: '/list',
+            url: '/userList',
+            data: {pageNumber: currentPage},
+            dataType: 'json',
             success: function (result) {
-                console.log(result)
+                $('li.page').each(function () {
+                    if ($(this).data('index') == currentPage) {
+                        $(this).addClass('active').siblings().removeClass('active');
+                    }
+                })
+                var data = {total: result.pageInfo.total, rows: result.pageInfo.list}
+                $("#userTable").bootstrapTable('load', data);
+                $('#currentPage').text(currentPage);
+            },
+            error: function (err) {
+                console.log(err)
             }
-        });
-    });
+        })
+    }
+
+    function toNextPage() {
+        var currentPage = Number($('li.page:last').text()) + 1;
+        getUserData(currentPage, 5);
+    }
 </script>
 </body>
 </html>
