@@ -1,0 +1,24 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="simple" targetRuntime="MyBatis3Simple">
+        <!--指定注释的生成策略-->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--配置数据库连接信息-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mybatis"/>
+        <!--指定bean的生成位置-->
+        <javaModelGenerator targetPackage="com.baoly.bean" targetProject="./src/main/java"/>
+        <!--指定sql映射文件的生成位置-->
+        <sqlMapGenerator targetPackage="com.baoly.mapper" targetProject="./src/main/java"/>
+        <!--指定mapper接口生成的位置-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.baoly.mapper" targetProject="src/main/java"/>
+
+        <!--指定表的生成策略-->
+        <table tableName="user" domainObjectName="User"/>
+        <table tableName="department" domainObjectName="Department"/>
+    </context>
+</generatorConfiguration>
