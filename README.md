@@ -5,8 +5,12 @@
 
 #### 软件架构
 软件架构说明
-- Spring SpringMVC MyBatis
-- Bootstrap Bootstrap Table
+- Spring 
+- SpringMVC 
+- MyBatis
+- jQuery
+- Bootstrap 
+- Bootstrap Table
 
 #### 使用说明
 
