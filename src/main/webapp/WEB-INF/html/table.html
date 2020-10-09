@@ -39,9 +39,9 @@
         <div class="col-md-6">
             <nav aria-label="Page navigation">
                 <ul class="pagination">
-                    <li><a href="#" onclick="shouye()">首页</a></li>
+                    <li><a href="#">首页</a></li>
                     <li class="prev">
-                        <a href="#" aria-label="Previous" onclick="toPerviousPage()">
+                        <a href="#" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -50,7 +50,7 @@
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
-                    <li><a href="#" onclick="muye()">末页</a></li>
+                    <li><a href="#">末页</a></li>
                 </ul>
             </nav>
         </div>
@@ -120,40 +120,35 @@
                     }
                 }
             ],
-            onLoadSuccess: function (result) {
-                successData(result)
+            onLoadSuccess: function (result) {  //加载成功时执行
+                console.log(result.pageInfo)
+                var currentPage = result.pageInfo.pageNum;
+                var pages = result.pageInfo.pages;
+                var total = result.pageInfo.total;
+                var pageSize = result.pageInfo.pageSize;
+                $('#currentPage').text(currentPage);
+                $('#pages').text(pages);
+                $('#total').text(total);
+                var paginationHtml = '';
+                if ($("li.page").length != 0) {
+                    $("li.page").remove();
+                }
+                for (var i = 0; i < result.pageInfo.navigatepageNums.length; i++) {
+                    if (result.pageInfo.pageNum == result.pageInfo.navigatepageNums[i]) {
+                        paginationHtml += ' <li class="active page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
+                    }
+                    else {
+                        paginationHtml += '<li class="page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
+                    }
+                }
+                $('.prev').after(paginationHtml)
+                var data = {total: result.pageInfo.total, rows: result.pageInfo.list};
+                $("#userTable").bootstrapTable('load', data)
             },
             onLoadError: function () {  //加载失败时执行
                 console.log('error')
             }
         })
-    }
-
-    function successData(result){
-        //加载成功时执行
-        console.log(result.pageInfo)
-        var currentPage = result.pageInfo.pageNum;
-        var pages = result.pageInfo.pages;
-        var total = result.pageInfo.total;
-        var pageSize = result.pageInfo.pageSize;
-        $('#currentPage').text(currentPage);
-        $('#pages').text(pages);
-        $('#total').text(total);
-        var paginationHtml = '';
-        if ($("li.page").length != 0) {
-            $("li.page").remove();
-        }
-        for (var i = 0; i < result.pageInfo.navigatepageNums.length; i++) {
-            if (result.pageInfo.pageNum == result.pageInfo.navigatepageNums[i]) {
-                paginationHtml += ' <li class="active page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
-            }
-            else {
-                paginationHtml += '<li class="page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
-            }
-        }
-        $('.prev').after(paginationHtml)
-        var data = {total: result.pageInfo.total, rows: result.pageInfo.list};
-        $("#userTable").bootstrapTable('load', data)
     }
 
     function changePage(currentPage) {
@@ -182,21 +177,6 @@
         var currentPage = Number($('li.page:last').text()) + 1;
         getUserData(currentPage, 5);
     }
-
-    function toPerviousPage() {
-        var currentPage = Number($('li.page:first').text()) - 1;
-        getUserData(currentPage, 5);
-    }
-
-    function shouye() {
-        getUserData(1, 5);
-    }
-    
-    function muye() {
-        var currentPage = Number($('#pages').text());
-        getUserData(currentPage, 5);
-    }
-    
 </script>
 </body>
 </html>
