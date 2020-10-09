@@ -11,11 +11,30 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/10/2020 19:59:53
+ Date: 09/10/2020 20:27:53
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for department
+-- ----------------------------
+DROP TABLE IF EXISTS `department`;
+CREATE TABLE `department`  (
+  `dept_id` int(11) NOT NULL,
+  `dept_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`dept_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of department
+-- ----------------------------
+INSERT INTO `department` VALUES (1, '技术部');
+INSERT INTO `department` VALUES (2, '财务部');
+INSERT INTO `department` VALUES (3, '财务部');
+INSERT INTO `department` VALUES (4, '运营部');
+INSERT INTO `department` VALUES (5, '综合管理部');
 
 -- ----------------------------
 -- Table structure for user
