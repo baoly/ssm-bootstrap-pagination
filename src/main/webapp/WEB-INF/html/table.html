@@ -21,6 +21,7 @@
                 <span class="glyphicon glyphicon-pencil"></span>
                 删除
             </button>
+
         </div>
     </div>
     <div class="row">
@@ -56,6 +57,10 @@
             </nav>
         </div>
     </div>
+</div>
+<div class="operation-info" style="position:absolute; top:5px; left:50%; transform:translateX(-50%)">
+    <div class="alert alert-success alert-dismissible" style="display: none;"></div>
+    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
 </div>
 <body>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
@@ -181,6 +186,7 @@
 
     function toBeforePage() {
         if (pageNum == 1) {
+            $('.alert-danger').show().fadeIn().fadeOut(3000).text('已经是第一页');
             return;
         }
         var currentPage = pageNum - 1;
@@ -189,6 +195,7 @@
 
     function toNextPage() {
         if (pageNum == pages) {
+            $('.alert-danger').fadeIn().fadeOut(3000).text('已经是最后一页');
             return;
         }
         var currentPage = pageNum + 1;
@@ -224,7 +231,7 @@
     function deleteUsers() {
         var rows = $("#userTable").bootstrapTable('getSelections');
         if (rows.length == 0) {
-            alert('请选择至少一条数据');
+            $('.alert-danger').fadeIn().fadeOut(3000).text('请选择至少一条数据');
             return;
         }
         var ids = [];
@@ -245,13 +252,13 @@
                     var currentPage = 1;
                     var pageSize = that.pageSize;
                     getUserData(currentPage, pageSize);
-                    alert('操作成功');
+                    $('.alert-success').fadeIn().fadeOut(3000).text('操作成功');
                 } else {
-                    alert('操作失败');
+                    $('.alert-danger').fadeIn().fadeOut(3000).text('操作失败');
                 }
             },
             error: function () {
-                alert('操作失败')
+                $('.alert-success').fadeIn().fadeOut(3000).text('操作失败')
             }
         })
     }
