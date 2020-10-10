@@ -21,4 +21,8 @@ public class UserService {
     public List<User> getUserList() {
         return userMapper.selectAll();
     }
+
+    public int deleteUsers(List<Integer> ids) {
+        return userMapper.deleteUsers(ids);
+    }
 }
