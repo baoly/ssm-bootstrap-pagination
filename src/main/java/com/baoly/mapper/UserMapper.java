@@ -20,4 +20,6 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     int addUsers(@Param("userList") ArrayList userList);
+
+    int deleteUsers(@Param("ids") List<Integer> ids);
 }
