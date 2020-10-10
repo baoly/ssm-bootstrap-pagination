@@ -27,7 +27,7 @@ public class UserController {
 
     @GetMapping("/index")
     public String index() {
-        return "index";
+        return "table";
     }
 
     @GetMapping("/userList")
