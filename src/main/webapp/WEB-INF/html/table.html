@@ -39,9 +39,9 @@
         <div class="col-md-6">
             <nav aria-label="Page navigation">
                 <ul class="pagination">
-                    <li><a href="#">首页</a></li>
+                    <li><a href="#" onclick="toFirstPage()">首页</a></li>
                     <li class="prev">
-                        <a href="#" aria-label="Previous">
+                        <a href="#" aria-label="Previous" onclick="toBeforePage()">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -50,7 +50,7 @@
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
-                    <li><a href="#">末页</a></li>
+                    <li><a href="#" onclick="toLastPage()">末页</a></li>
                 </ul>
             </nav>
         </div>
@@ -64,7 +64,11 @@
 <script>
     $(function () {
         getUserData(1, 5);
-    })
+    });
+    var pages = 0;
+    var pageNum = 1;
+    var pageSize = 5;
+    var navigatepageNums = [];
 
     function getUserData(currentPage, pageSize) {
         $('#userTable').bootstrapTable('destroy');
@@ -121,27 +125,17 @@
                 }
             ],
             onLoadSuccess: function (result) {  //加载成功时执行
-                console.log(result.pageInfo)
                 var currentPage = result.pageInfo.pageNum;
-                var pages = result.pageInfo.pages;
+                pages = result.pageInfo.pages;
                 var total = result.pageInfo.total;
-                var pageSize = result.pageInfo.pageSize;
                 $('#currentPage').text(currentPage);
                 $('#pages').text(pages);
                 $('#total').text(total);
-                var paginationHtml = '';
-                if ($("li.page").length != 0) {
-                    $("li.page").remove();
-                }
-                for (var i = 0; i < result.pageInfo.navigatepageNums.length; i++) {
-                    if (result.pageInfo.pageNum == result.pageInfo.navigatepageNums[i]) {
-                        paginationHtml += ' <li class="active page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
-                    }
-                    else {
-                        paginationHtml += '<li class="page" data-index="' + result.pageInfo.navigatepageNums[i] + '"><a href="#" onclick="changePage(' + result.pageInfo.navigatepageNums[i] + ')">' + result.pageInfo.navigatepageNums[i] + '</a></li>'
-                    }
-                }
-                $('.prev').after(paginationHtml)
+                pages = result.pageInfo.pages;
+                pageSize = result.pageInfo.pageSize;
+                pageNum = result.pageInfo.pageNum;
+                navigatepageNums = result.pageInfo.navigatepageNums;
+                getNavigatePageButton();
                 var data = {total: result.pageInfo.total, rows: result.pageInfo.list};
                 $("#userTable").bootstrapTable('load', data)
             },
@@ -162,7 +156,10 @@
                     if ($(this).data('index') == currentPage) {
                         $(this).addClass('active').siblings().removeClass('active');
                     }
-                })
+                });
+                pageNum = result.pageInfo.pageNum;
+                navigatepageNums = result.pageInfo.navigatepageNums;
+                getNavigatePageButton();
                 var data = {total: result.pageInfo.total, rows: result.pageInfo.list}
                 $("#userTable").bootstrapTable('load', data);
                 $('#currentPage').text(currentPage);
@@ -173,9 +170,56 @@
         })
     }
 
+    function toBeforePage() {
+        var currentPage = pageNum - 1;
+        getUserData(currentPage, pageSize);
+    }
+
     function toNextPage() {
-        var currentPage = Number($('li.page:last').text()) + 1;
-        getUserData(currentPage, 5);
+        var currentPage = pageNum + 1;
+        getUserData(currentPage, pageSize);
+    }
+
+    function toFirstPage() {
+        var currentPage = 1;
+        getUserData(currentPage, pageSize);
+    }
+
+    function toLastPage() {
+        $.ajax({
+            method: 'get',
+            url: '/userList',
+            data: {pageNumber: pages},
+            dataType: 'json',
+            success: function (result) {
+                var currentPage = result.pageInfo.pageNum;
+                var data = {total: result.pageInfo.total, rows: result.pageInfo.list};
+                pageNum = result.pageInfo.pageNum;
+                navigatepageNums = result.pageInfo.navigatepageNums;
+                getNavigatePageButton();
+                $("#userTable").bootstrapTable('load', data);
+                $('#currentPage').text(currentPage);
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
+
+    function getNavigatePageButton() {
+        var paginationHtml = '';
+        if ($("li.page").length != 0) {
+            $("li.page").remove();
+        }
+        for (var i = 0; i < navigatepageNums.length; i++) {
+            if (pageNum == navigatepageNums[i]) {
+                paginationHtml += ' <li class="active page" data-index="' + navigatepageNums[i] + '"><a href="#" onclick="changePage(' + navigatepageNums[i] + ')">' + navigatepageNums[i] + '</a></li>'
+            }
+            else {
+                paginationHtml += '<li class="page" data-index="' + navigatepageNums[i] + '"><a href="#" onclick="changePage(' + navigatepageNums[i] + ')">' + navigatepageNums[i] + '</a></li>'
+            }
+        }
+        $('.prev').after(paginationHtml);
     }
 </script>
 </body>
